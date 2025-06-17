@@ -30,6 +30,26 @@ services:
       timeout: 5s
       retries: 5
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION}
+    ports:
+      - "${CLICKHOUSE_HTTP_PORT}:8123"
+      - "${CLICKHOUSE_TCP_PORT}:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse/
+    networks:
+      - telecom-net
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8123/ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 networks:
   telecom-net:
     driver: bridge
@@ -37,3 +57,4 @@ networks:
 volumes:
   cockroachdb-data:
   scylladb-data:
+  clickhouse-data:
