@@ -1,0 +1,18 @@
+services:
+  cockroachdb:
+    image: cockroachdb/cockroach:${COCKROACHDB_VERSION}
+    command: start-single-node --insecure --http-addr=0.0.0.0:8080
+    ports:
+      - "${COCKROACHDB_PORT}:26257"
+      - "${COCKROACHDB_UI_PORT}:8080"
+    volumes:
+      - cockroachdb-data:/cockroach/cockroach-data
+    networks:
+      - telecom-net
+
+networks:
+  telecom-net:
+    driver: bridge
+
+volumes:
+  cockroachdb-data:
