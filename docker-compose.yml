@@ -9,6 +9,11 @@ services:
       - cockroachdb-data:/cockroach/cockroach-data
     networks:
       - telecom-net
+    healthcheck:
+      test: [ "CMD", "/cockroach/cockroach", "sql", "--insecure", "-e", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   telecom-net:
