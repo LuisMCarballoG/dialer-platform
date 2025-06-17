@@ -15,9 +15,25 @@ services:
       timeout: 5s
       retries: 5
 
+  scylladb:
+    image: scylladb/scylla:${SCYLLADB_VERSION}
+    command: --smp 1 --memory 1G --developer-mode 1
+    ports:
+      - "${SCYLLADB_CQL_PORT}:9042"
+    volumes:
+      - scylladb-data:/var/lib/scylla
+    networks:
+      - telecom-net
+    healthcheck:
+      test: [ "CMD-SHELL", "nodetool status | grep UN" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 networks:
   telecom-net:
     driver: bridge
 
 volumes:
   cockroachdb-data:
+  scylladb-data:
