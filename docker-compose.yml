@@ -68,9 +68,34 @@ services:
     networks:
       - telecom-net
 
+  kamailio:
+    image: ghcr.io/kamailio/kamailio-ci:${KAMAILIO_VERSION}
+    ports:
+      - "127.0.0.1:5060:5060/udp"
+      - "127.0.0.1:5060:5060/tcp"
+    volumes:
+     - ./infra/dialer-kamailio/kamailio.cfg:/etc/kamailio/kamailio.cfg:ro
+    networks:
+      telecom-net:
+        ipv4_address: 172.28.0.10
+    healthcheck:
+      test: [ "CMD-SHELL", "kamcmd core.uptime || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  net-tools:
+    image: alpine:latest
+    command: [ "sleep", "3600" ]
+    networks:
+      - telecom-net
+
 networks:
   telecom-net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
 
 volumes:
   cockroachdb-data:
