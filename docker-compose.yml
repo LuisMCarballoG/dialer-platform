@@ -90,6 +90,26 @@ services:
     networks:
       - telecom-net
 
+  freeswitch:
+    image: freeswitch-final-1.22
+    ports:
+      - "8021:8021"
+      - "30000-30010:30000-30010/udp"
+      - "7443:7443"
+    volumes:
+      - freeswitch-log:/usr/local/freeswitch/log
+      - freeswitch-recordings:/usr/local/freeswitch/recordings
+    networks:
+      telecom-net:
+        ipv4_address: 172.28.0.11
+    depends_on:
+      - kamailio
+    healthcheck:
+      test: [ "CMD-SHELL", "/usr/local/freeswitch/bin/fs_cli -x 'status' | grep -q 'UP'" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
 networks:
   telecom-net:
     driver: bridge
@@ -102,3 +122,5 @@ volumes:
   scylladb-data:
   clickhouse-data:
   kafka-data:
+  freeswitch-log:
+  freeswitch-recordings:
